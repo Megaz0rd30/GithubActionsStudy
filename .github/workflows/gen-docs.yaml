@@ -1,5 +1,5 @@
 name: Generate Terraform Docs
-on: push
+on: [workflow_dispatch]
 
 jobs:
   generate_docs_path:
