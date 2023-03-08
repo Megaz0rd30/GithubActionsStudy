@@ -93,17 +93,3 @@ jobs:
           jsonValue=$(sed 's|\"|\\"|g' <<< "$jsonValue")
           echo $jsonValue
           echo "list_paths=$jsonValue" >> "$GITHUB_OUTPUT"
-  generate_readme:
-    needs: generate_docs_paths
-    runs-on: ubuntu-latest
-    strategy:
-      matrix: ${{ fromJSON(needs.generate_docs_paths.outputs.module_paths) }}
-    steps:
-      - uses: actions/checkout@v3
-      - name: Render terraform docs and push changes back to PR
-      uses: terraform-docs/gh-actions@main
-      with:
-        working-dir: ${{ matrix.paths }}
-        output-file: README.md
-        output-method: inject
-        git-push: "true"
