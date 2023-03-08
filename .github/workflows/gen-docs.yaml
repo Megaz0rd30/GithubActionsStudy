@@ -45,7 +45,7 @@ jobs:
           done
 
           jsonValue=$(jq --compact-output --null-input '$ARGS.positional' --args -- "${modulesPath[@]}")
-          jsonValue="{\"paths\":$jsonValue}"
+          jsonValue="{\"include\":$jsonValue}"
           jsonValue=$(sed 's|\"|\\"|g' <<< "$jsonValue")
           echo $jsonValue
           echo "list_paths=$jsonValue" >> "$GITHUB_OUTPUT"
