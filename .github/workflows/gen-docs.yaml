@@ -1,3 +1,47 @@
+name: Generate Terraform Docs
+on: push
+
+jobs:
+  generate_docs_path:
+    runs-on: ubuntu-latest
+    outputs:
+      module_paths: ${{ steps.module_path.outputs.list_paths }}
+    steps:
+      - id: install_dependencies
+        run: |
+          sudo apt update -y
+          sudo apt install jq -y
+
+      - id: modules_path
+        run: |
+          modulesPath=()
+          for d in modules/*/ ; do
+          
+              echo "## Generating Cloud Provider > $d"
+
+              for service_directory in $d*/ ; do
+                  echo "+++Generating Service > $service_directory"
+                  
+                  for service_modules_directory in $service_directory*/ ; do
+                      echo ">>>> Generating Service Module > $service_modules_directory"
+                      modulesPath+=("$service_modules_directory")
+                  done
+              done
+          done
+
+          jsonValue=$(jq --compact-output --null-input '$ARGS.positional' --args -- "${modulesPath[@]}")
+          jsonValue="{\"paths\":$jsonValue}"
+          jsonValue=$(sed 's|\"|\\"|g' <<< "$jsonValue")
+          echo $jsonValue
+          echo "list_paths=$jsonValue" >> "$GITHUB_OUTPUT"
+  generate_readme:
+    needs: generate_docs_path
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJSON(needs.generate_docs_path.outputs.module_paths) }}
+
+---
+
 # This is a basic workflow to help you get started with Actions
 
 name: doc-teste
@@ -10,10 +54,11 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  generate_docs_paths:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
+    outputs:
+      module_paths: ${{ steps.id_generate_docs.outputs.list_paths }}
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -48,3 +93,17 @@ jobs:
           jsonValue=$(sed 's|\"|\\"|g' <<< "$jsonValue")
           echo $jsonValue
           echo "list_paths=$jsonValue" >> "$GITHUB_OUTPUT"
+  generate_readme:
+    needs: generate_docs_paths
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJSON(needs.generate_docs_paths.outputs.module_paths) }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Render terraform docs and push changes back to PR
+      uses: terraform-docs/gh-actions@main
+      with:
+        working-dir: ${{ matrix.paths }}
+        output-file: README.md
+        output-method: inject
+        git-push: "true"
