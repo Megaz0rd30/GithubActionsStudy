@@ -56,9 +56,6 @@ jobs:
   generate_readme:
     needs: generate_docs_paths
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        paths: ["modules/cloudA/ServiceC/","modules/cloudA/ServiceC/"]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -66,7 +63,7 @@ jobs:
       - name: Render terraform docs and push changes back to PR
         uses: terraform-docs/gh-actions@main
         with:
-          working-dir: ${{ matrix.paths }}
+          working-dir: modules/cloudA/ServiceC/,modules/cloudA/ServiceC/
           output-file: README.md
           output-method: inject
           git-push: "true"
