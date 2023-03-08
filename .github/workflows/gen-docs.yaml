@@ -51,7 +51,6 @@ jobs:
           echo $jsonValue
           echo "list_paths=$jsonValue" >> "$GITHUB_OUTPUT"
   generate_readme:
-    needs: generate_docs_paths
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -76,8 +75,8 @@ jobs:
                     echo ">>>> Generating Service Module > $service_modules_directory"
                     #modulesPath+=("$service_modules_directory")
                     ./terraform-docs markdown $service_modules_directory --output-file README.md 
-                    #stat "$service_modules_directoryREADME.md"
-                    #git add "$service_modules_directoryREADME.md"
+                    stat "${service_modules_directory}README.md"
+                    git add "${service_modules_directory}README.md"
                 done
             done
           done
