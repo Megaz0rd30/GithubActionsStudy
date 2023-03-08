@@ -61,11 +61,31 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
       - name: Render terraform docs and push changes back to PR
-        uses: terraform-docs/gh-actions@main
-        with:
-          working-dir: modules/cloudA/ServiceC/,modules/cloudA/ServiceC/
-          output-file: README.md
-          output-method: inject
-          git-push: "true"
-          git-push-user-email: "gabrielcastro30@gmail.com"
-          git-push-user-name: "Megaz0rd30"
+        run: |
+            curl -Lo ./terraform-docs.tar.gz https://github.com/terraform-docs/terraform-docs/releases/download/v0.16.0/terraform-docs-v0.16.0-$(uname)-amd64.tar.gz
+            tar -xzf terraform-docs.tar.gz
+            chmod +x terraform-docs
+      - name: Generate Terraform Docs
+        run: |
+          git config user.name "Megaz0rd30"
+          git config user.email "gabrielcastro30@gmail.com"
+          
+          for d in modules/*/ ; do
+            echo "## Generating Cloud Provider > $d"
+            
+            for service_directory in $d*/ ; do
+                echo "+++Generating Service > $service_directory"
+
+                for service_modules_directory in $service_directory*/ ; do
+                    echo ">>>> Generating Service Module > $service_modules_directory"
+                    #modulesPath+=("$service_modules_directory")
+                    ./terraform-docs $service_modules_directory --output-file README.md
+                    
+                    git add $service_modules_directory/README.md
+                    
+                done
+            done
+          done
+          git commit -m "#$(date +%s) Update README.md"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+            
