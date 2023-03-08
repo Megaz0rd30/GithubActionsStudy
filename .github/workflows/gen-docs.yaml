@@ -22,8 +22,8 @@ jobs:
       - id: id_dep
         name: Install Dependencies
         run: |
-          apt update -y
-          apt install jq -y
+          sudo apt update -y
+          sudo apt install jq -y
         
       - id: id_generate_docs
         name: generate_docs
