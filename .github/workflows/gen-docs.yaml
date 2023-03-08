@@ -66,6 +66,7 @@ jobs:
             tar -xzf terraform-docs.tar.gz
             chmod +x terraform-docs
       - name: Generate Terraform Docs
+        shell: bash
         run: |
           git config user.name "Megaz0rd30"
           git config user.email "gabrielcastro30@gmail.com"
