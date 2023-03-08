@@ -76,12 +76,12 @@ jobs:
                     echo ">>>> Generating Service Module > $service_modules_directory"
                     #modulesPath+=("$service_modules_directory")
                     ./terraform-docs markdown $service_modules_directory --output-file README.md 
-                    stat $service_modules_directoryREADME.md
-                    #git add $service_modules_directoryREADME.md
+                    stat "$service_modules_directoryREADME.md"
+                    git add "$service_modules_directoryREADME.md"
                     
                 done
             done
           done
           git status
-          #git commit -m "#$(date +%s) Update README.md"
-          #git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          git commit -m "#$(date +%s) Update README.md"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
