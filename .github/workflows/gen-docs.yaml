@@ -67,3 +67,5 @@ jobs:
           output-file: README.md
           output-method: inject
           git-push: "true"
+          git-push-user-email: "gabrielcastro30@gmail.com"
+          git-push-user-name: "Megaz0rd30"
