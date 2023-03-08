@@ -22,7 +22,8 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-      
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
       - id: id_dep
         name: Install Dependencies
         run: |
@@ -60,6 +61,8 @@ jobs:
         paths: ["modules/cloudA/ServiceC/","modules/cloudA/ServiceC/"]
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
       - name: Render terraform docs and push changes back to PR
         uses: terraform-docs/gh-actions@main
         with:
@@ -67,4 +70,3 @@ jobs:
           output-file: README.md
           output-method: inject
           git-push: "true"
-          github_token: ${{ secrets.GITHUB_TOKEN }}
