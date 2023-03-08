@@ -75,7 +75,7 @@ jobs:
                 for service_modules_directory in $service_directory*/ ; do
                     echo ">>>> Generating Service Module > $service_modules_directory"
                     #modulesPath+=("$service_modules_directory")
-                    ./terraform-docs $service_modules_directory --output-file README.md
+                    ./terraform-docs markdown $service_modules_directory --output-file README.md 
                     
                     git add $service_modules_directoryREADME.md
                     
