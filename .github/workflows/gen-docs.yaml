@@ -77,7 +77,7 @@ jobs:
                     #modulesPath+=("$service_modules_directory")
                     ./terraform-docs $service_modules_directory --output-file README.md
                     
-                    git add $service_modules_directory/README.md
+                    git add $service_modules_directoryREADME.md
                     
                 done
             done
