@@ -47,11 +47,6 @@ jobs:
           git status
           git commit -m "#$(date +%s) Update Terraform README.md"
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
-      - name: Get Pull Request ID
-        if: github.event_name == 'pull_request'
-        run: |
-            export PR_NUMBER=$( echo {{ github.event.pull_request.head.ref }} | awk 'BEGIN { FS = "/" } ; { print $3 }')
-            echo "pr_num=$PR_NUMBER" >> $GITHUB_ENV
       - name: Bot Comment
         uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
@@ -59,7 +54,7 @@ jobs:
           script: |
               await github.rest.issues.createComment(
                 {
-                  issue_number: ${{ env.pr_num }},
+                  issue_number: ${{ github.event.issue.number }},
                   owner: context.repo.owner,
                   repo: contexto.repo.repo,
                   body: 'Generated Terraform Docs automatically'
