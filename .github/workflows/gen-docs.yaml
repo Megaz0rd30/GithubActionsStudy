@@ -57,7 +57,7 @@ jobs:
                 {
                   issue_number: ${{ github.event.number }},
                   owner: context.repo.owner,
-                  repo: contexto.repo.repo,
+                  repo: context.repo.repo,
                   body: 'Generated Terraform Docs automatically'
                 }
               )
