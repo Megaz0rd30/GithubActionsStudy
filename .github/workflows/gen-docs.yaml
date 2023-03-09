@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.ref }}
-      - name: Render terraform docs and push changes back to PR
+      - name: Install Terraform Docs
         run: |
             curl -Lo ./terraform-docs.tar.gz https://github.com/terraform-docs/terraform-docs/releases/download/v0.16.0/terraform-docs-v0.16.0-$(uname)-amd64.tar.gz
             tar -xzf terraform-docs.tar.gz
@@ -47,3 +47,21 @@ jobs:
           git status
           git commit -m "#$(date +%s) Update Terraform README.md"
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
+      - name: Get Pull Request ID
+        if: github.event_name == 'pull_request'
+        run: |
+            export PR_NUMBER=$( echo {{ github.event.pull_request.head.ref }} | awk 'BEGIN { FS = "/" } ; { print $3 }')
+            echo "pr_num=$PR_NUMBER" >> $GITHUB_ENV
+      - name: Bot Comment
+        uses: actions/github-script@v6
+        if: github.event_name == 'pull_request'
+        with:
+          script: |
+              await github.rest.issues.createComment(
+                {
+                  issue_number: ${{ env.pr_num }},
+                  owner: context.repo.owner,
+                  repo: contexto.repo.repo,
+                  body: 'Generated Terraform Docs automatically'
+                }
+              )
