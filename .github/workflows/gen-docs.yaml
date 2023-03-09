@@ -14,43 +14,6 @@ permissions:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  generate_docs_paths:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-    outputs:
-      module_paths: ${{ steps.id_generate_docs.outputs.list_paths }}
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-      - id: id_dep
-        name: Install Dependencies
-        run: |
-          sudo apt install jq -y
-        
-      - id: id_generate_docs
-        name: generate_docs
-        run: |
-          modulesPath=()
-          for d in modules/*/ ; do
-          
-              echo "## Generating Cloud Provider > $d"
-              for service_directory in $d*/ ; do
-                  echo "+++Generating Service > $service_directory"
-                  
-                  for service_modules_directory in $service_directory*/ ; do
-                      echo ">>>> Generating Service Module > $service_modules_directory"
-                      modulesPath+=("$service_modules_directory")
-                  done
-              done
-          done
-          jsonValue=$(jq --compact-output --null-input '$ARGS.positional' --args -- "${modulesPath[@]}")
-          jsonValue="{\"include\":{\"paths\":$jsonValue}}"
-          jsonValue=$(sed 's|\"|\\"|g' <<< "$jsonValue")
-          echo $jsonValue
-          echo "list_paths=$jsonValue" >> "$GITHUB_OUTPUT"
   generate_readme:
     runs-on: ubuntu-latest
     steps:
@@ -64,8 +27,8 @@ jobs:
             chmod +x terraform-docs
       - name: Generate Terraform Docs
         run: |
-          git config user.name "Megaz0rd30"
-          git config user.email "gabrielcastro30@gmail.com"
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
           
           for d in modules/*/ ; do
             echo "## Generating Cloud Provider > $d"
@@ -82,5 +45,5 @@ jobs:
             done
           done
           git status
-          git commit -m "#$(date +%s) Update README.md"
+          git commit -m "#$(date +%s) Update Terraform README.md"
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
